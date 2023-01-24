@@ -30,30 +30,21 @@ app.post("/repositories", (request, response) => {
 
 app.put("/repositories/:id", (request, response) => {
   const { id } = request.params;
-  const updatedRepository = request.body;
+  const { title, url, techs } = request.body;
 
   const repositoryIndex = repositories.findIndex(
-    repository => repository.id === id
+    repository => repository.id == id
   );
 
   if (repositoryIndex < 0) {
     return response.status(404).json({ error: "Repository not found" });
   }
 
-  let repository = repositories[repositoryIndex];
+  const repository = { ...repositories[repositoryIndex], title, url, techs}
 
-  if (updatedRepository.title) repository.title = updatedRepository.title;
-  if (updatedRepository.url) repository.url = updatedRepository.url;
-  if (updatedRepository.techs) {
-    updatedRepository.techs.forEach((tech) => {
-      repository.techs.push(tech);
-    });
-  }
-  if(updatedRepository.likes) return response.json({likes: repository.likes});
+  repositories[repositoryIndex] = repository;
 
-  console.log(validate(repository.id))
-
-  return response.status(204).json(repository);
+  return response.status(201).json(repository);
 });
 
 app.delete("/repositories/:id", (request, response) => {
